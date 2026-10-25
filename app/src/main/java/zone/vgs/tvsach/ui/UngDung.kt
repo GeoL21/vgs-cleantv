@@ -74,7 +74,7 @@ private val Cam = Color(0xFFB45309)      // ámbar: avisos
 private val Nen = Color(0xFFF8FAFC)      // fondo
 private val The1 = Color(0xFFFFFFFF)     // tarjetas
 private val The2 = Color(0xFFF1F5FD)     // superficies suaves
-private val ChuPhu = Color(0xFF475569)   // texto secundario
+private val ChuPhu = Color(0xFF334155)   // texto secundario (más oscuro para leer mejor)
 private val Vien = Color(0xFFE2E8F0)     // bordes
 private val Chu = Color(0xFF0F172A)      // texto principal
 private val NenCanhBao = Color(0xFFFEF3C7)
@@ -93,8 +93,9 @@ private val Poppins = FontFamily(
     Font(R.font.poppins_700, FontWeight.Bold), Font(R.font.poppins_700, FontWeight.Black),
 )
 private val Chu_ = androidx.compose.material3.Typography().let { t ->
-    fun androidx.compose.ui.text.TextStyle.os() = copy(fontFamily = OpenSans)
-    fun androidx.compose.ui.text.TextStyle.pp() = copy(fontFamily = Poppins)
+    // TuneTV: texto en semi-negrita y títulos en negrita, para leer mejor.
+    fun androidx.compose.ui.text.TextStyle.os() = copy(fontFamily = OpenSans, fontWeight = FontWeight.SemiBold)
+    fun androidx.compose.ui.text.TextStyle.pp() = copy(fontFamily = Poppins, fontWeight = FontWeight.Bold)
     t.copy(
         displayLarge = t.displayLarge.pp(), displayMedium = t.displayMedium.pp(), displaySmall = t.displaySmall.pp(),
         headlineLarge = t.headlineLarge.pp(), headlineMedium = t.headlineMedium.pp(), headlineSmall = t.headlineSmall.pp(),
@@ -281,7 +282,7 @@ private fun The(tieuDe: String? = null, icon: ImageVector? = null, noiDung: @Com
                 }
                 Spacer(Modifier.width(10.dp))
             }
-            Text(tieuDe, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, fontFamily = Poppins)
+            Text(tieuDe, fontWeight = FontWeight.Bold, fontSize = 16.sp, fontFamily = Poppins)
         }
         noiDung()
     }
@@ -294,7 +295,7 @@ private fun NutChinh(chu: String, modifier: Modifier = Modifier, enabled: Boolea
         .clickable(enabled = enabled, onClick = onClick), contentAlignment = Alignment.Center) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (icon != null) { Icon(icon, null, tint = Color.White); Spacer(Modifier.width(8.dp)) }
-            Text(chu, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.White)
+            Text(chu, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
         }
     }
 }
@@ -305,12 +306,12 @@ private fun NutPhu(chu: String, icon: ImageVector? = null, enabled: Boolean = tr
         shape = RoundedCornerShape(12.dp), border = BorderStroke(1.dp, Vien),
         colors = ButtonDefaults.outlinedButtonColors(containerColor = The1, contentColor = Chu)) {
         if (icon != null) { Icon(icon, null, Modifier.size(18.dp), tint = Tim); Spacer(Modifier.width(8.dp)) }
-        Text(chu, color = if (enabled) Chu else ChuPhu, textAlign = TextAlign.Center)
+        Text(chu, color = if (enabled) Chu else ChuPhu, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
     }
 }
 
 @Composable
-private fun Phu(chu: String, mau: Color = ChuPhu) = Text(chu, fontSize = 13.sp, color = mau, lineHeight = 19.sp)
+private fun Phu(chu: String, mau: Color = ChuPhu) = Text(chu, fontSize = 14.sp, color = mau, lineHeight = 20.sp, fontWeight = FontWeight.SemiBold)
 
 @Composable
 private fun OIcon(icon: ImageVector, size: Dp = 44.dp, nen: Brush = Gradient) {
@@ -356,7 +357,7 @@ private fun BuocSo(so: Int, chu: String) {
 private fun DauTrang(icon: @Composable () -> Unit, tieuDe: String, phu: String?) {
     Column(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
         icon()
-        Text(tieuDe, fontWeight = FontWeight.SemiBold, fontSize = 24.sp, textAlign = TextAlign.Center, fontFamily = Poppins)
+        Text(tieuDe, fontWeight = FontWeight.Bold, fontSize = 24.sp, textAlign = TextAlign.Center, fontFamily = Poppins)
         if (phu != null) Phu(phu)
     }
 }
@@ -398,7 +399,7 @@ private fun ManChinh(vm: PhienLamViec) = Cuon {
     }
     Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(The1).border(1.dp, Vien, RoundedCornerShape(20.dp)).padding(22.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("Tu TV sin publicidad, en 4 pasos", fontWeight = FontWeight.SemiBold, fontSize = 26.sp, lineHeight = 33.sp, fontFamily = Poppins)
+        Text("Tu TV sin publicidad, en 4 pasos", fontWeight = FontWeight.Bold, fontSize = 26.sp, lineHeight = 33.sp, fontFamily = Poppins)
         Phu("Desactivamos lo que no usas. Nada se borra y todo se puede deshacer con Restaurar.")
         if (vm.dsSaoLuu.isNotEmpty()) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf("${vm.dsSaoLuu.size}" to "TV limpias", "${vm.dsSaoLuu.sumOf { it.daTatBoiApp.size }}" to "apps desactivadas").forEach { (so, chu) ->
@@ -617,7 +618,11 @@ private fun LuaChon(chon: Boolean, chu: String, phu: String?, onClick: () -> Uni
 
 @Composable
 private fun ManChonGoi(vm: PhienLamViec) {
-    val nhom = vm.muc.groupBy { it.loai }
+    // TuneTV: solo se muestran las apps que la comunidad considera basura (las que vienen marcadas como seguras).
+    // Lo que la TV necesita, lo que podría dañar algo y lo que depende de cada casa (Google Home, voz, apps con ícono)
+    // no aparece, para que nadie lo desactive por error.
+    val visibles = vm.muc.filter { it.chonSan && !KeHoach.nenGiu(it) }
+    val nhom = visibles.groupBy { it.loai }
     val so = vm.soDaChon()
     Column(Modifier.fillMaxSize()) {
         LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(16.dp, 8.dp, 16.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -627,11 +632,10 @@ private fun ManChonGoi(vm: PhienLamViec) {
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text("$so", fontWeight = FontWeight.SemiBold, fontSize = 40.sp, color = Tim, fontFamily = Poppins)
                         Spacer(Modifier.width(8.dp))
-                        Text("para desactivar" + " / ${vm.muc.size}", color = ChuPhu, modifier = Modifier.padding(bottom = 8.dp))
+                        Text("apps basura para desactivar", color = ChuPhu, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
                     }
-                    LinearProgressIndicator(progress = { if (vm.muc.isEmpty()) 0f else so.toFloat() / vm.muc.size },
-                        modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)), color = Hong, trackColor = The2)
-                    Phu("Los paquetes seguros ya vienen marcados. Pregunta al dueño por las apps con ícono. Los paquetes que la TV necesita (HDMI, control, teclado, Play Store) se conservan y no aparecen.")
+                    if (visibles.isEmpty()) Phu("Tu TV ya está limpia: no quedan apps basura activas. Puedes seguir para poner el inicio limpio.")
+                    else Phu("Estas son las apps que la comunidad considera basura en TVs como la tuya. Ya vienen marcadas; apaga solo las que sí uses. Lo que tu TV necesita y lo que no es seguro desactivar no aparece aquí.")
                 }
             }
             LoaiMuc.entries.forEach { loai ->
@@ -651,13 +655,7 @@ private fun ManChonGoi(vm: PhienLamViec) {
                 }
                 items(ds, key = { it.pkg }) { m -> DongGoi(m, vm.chon[m.pkg] == true) { vm.chon[m.pkg] = it } }
             }
-            item {
-                Row(Modifier.fillMaxWidth().padding(top = 12.dp).clip(RoundedCornerShape(14.dp)).clickable { vm.epSetupwraith = !vm.epSetupwraith }.padding(4.dp),
-                    verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(vm.epSetupwraith, { vm.epSetupwraith = it })
-                    Phu("La TV está por cable de red (permitir desactivar setupwraith aunque sea dueño del Wi‑Fi)")
-                }
-            }
+            // TuneTV: la opción avanzada de setupwraith no se muestra (no es segura para todos).
         }
         var hoi by remember { mutableStateOf(false) }
         Column(Modifier.background(Nen).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -708,7 +706,7 @@ private fun DongGoi(m: MucGoi, chon: Boolean, doi: (Boolean) -> Unit) {
         }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
-            Text(ten, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 1)
+            Text(ten, fontWeight = FontWeight.Bold, fontSize = 15.sp, maxLines = 2)
             Text(m.pkg, fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = ChuPhu.copy(alpha = 0.8f), maxLines = 1)
             val ghi = m.ghiChu.ifBlank { m.nhom }
             if (ghi.isNotBlank()) Text(ghi, fontSize = 12.sp, color = ChuPhu, maxLines = 2, lineHeight = 16.sp)

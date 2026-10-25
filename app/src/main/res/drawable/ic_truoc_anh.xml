@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TuneTV: TV con una chispa (opción A), dentro de la zona segura del ícono adaptativo. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="5" android:strokeLineJoin="round"
+        android:pathData="M35.6,38 L72.4,38 Q78,38 78,43.6 L78,64.4 Q78,70 72.4,70 L35.6,70 Q30,70 30,64.4 L30,43.6 Q30,38 35.6,38 Z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="5" android:strokeLineCap="round"
+        android:pathData="M46,78 L62,78" />
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M54,45.6 L56.8,52 L63.2,54.8 L56.8,57.6 L54,64 L51.2,57.6 L44.8,54.8 L51.2,52 Z" />
+</vector>
