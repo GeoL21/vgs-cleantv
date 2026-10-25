@@ -14,6 +14,8 @@ import java.net.URL
  *  - bản app mới: tải APK rồi mở hộp cài của Android (người dùng bấm Cài đặt).
  */
 object CapNhat {
+    /** TuneTV: la actualización automática desde el servidor del autor original está apagada. */
+    const val APAGADO = true
     const val GOC = "https://cleantv.alexvgs.tech"
 
     data class BanMoi(val versionCode: Int, val versionName: String, val apk: String, val ghiChu: String)
@@ -52,6 +54,7 @@ object CapNhat {
      * Trả về bản app mới nếu có (versionCode cao hơn bản đang chạy).
      */
     fun kiemTra(ctx: Context): BanMoi? {
+        if (APAGADO) return null
         val j = JSONObject(String(tai("$GOC/cap-nhat.json"), Charsets.UTF_8))
         val prefs = ctx.getSharedPreferences("ota", Context.MODE_PRIVATE)
         j.optJSONObject("duLieu")?.let { dl ->
@@ -77,7 +80,7 @@ object CapNhat {
     }
 
     /** Chỉ đọc bản app mới (không kéo dữ liệu) — cho việc kiểm tra chạy nền. */
-    fun kiemTraApp(): BanMoi? = banApp(JSONObject(String(tai("$GOC/cap-nhat.json"), Charsets.UTF_8)))
+    fun kiemTraApp(): BanMoi? = if (APAGADO) null else banApp(JSONObject(String(tai("$GOC/cap-nhat.json"), Charsets.UTF_8)))
 
     private fun banApp(j: JSONObject): BanMoi? {
         val app = j.optJSONObject("app") ?: return null

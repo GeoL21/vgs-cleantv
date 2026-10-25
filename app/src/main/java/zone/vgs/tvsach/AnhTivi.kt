@@ -20,7 +20,7 @@ object AnhTivi {
     /** Android 10+ lưu vào Pictures/CleanTV không cần xin quyền; máy cũ hơn dùng Chia sẻ. */
     val luuDuoc: Boolean get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
-    private fun ten() = "CleanTV-" + SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date()) + ".png"
+    private fun ten() = "TuneTV-" + SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date()) + ".png"
 
     /** Lưu vào thư viện ảnh; trả false khi không ghi được. */
     fun luu(ctx: Context, anh: Bitmap): Boolean {
@@ -28,13 +28,13 @@ object AnhTivi {
         val v = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, ten())
             put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CleanTV")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/TuneTV")
             put(MediaStore.Images.Media.IS_PENDING, 1)
         }
         val cr = ctx.contentResolver
         val uri = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, v) ?: return false
         return try {
-            cr.openOutputStream(uri)?.use { anh.compress(Bitmap.CompressFormat.PNG, 100, it) } ?: error("không mở được")
+            cr.openOutputStream(uri)?.use { anh.compress(Bitmap.CompressFormat.PNG, 100, it) } ?: error("no se pudo abrir")
             cr.update(uri, ContentValues().apply { put(MediaStore.Images.Media.IS_PENDING, 0) }, null, null)
             true
         } catch (e: Exception) {
@@ -52,6 +52,6 @@ object AnhTivi {
         val uri = FileProvider.getUriForFile(ctx, "${ctx.packageName}.files", f)
         val gui = Intent(Intent.ACTION_SEND).setType("image/png").putExtra(Intent.EXTRA_STREAM, uri)
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        ctx.startActivity(Intent.createChooser(gui, t("Chia sẻ màn hình tivi", "Share TV screen")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        ctx.startActivity(Intent.createChooser(gui, "Compartir la pantalla de la TV").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 }

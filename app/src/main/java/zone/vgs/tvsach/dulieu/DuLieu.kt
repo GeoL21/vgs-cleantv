@@ -188,15 +188,15 @@ val TEN_APP = mapOf(
 
 private val TEN_APP_EN = mapOf(
     "com.google.android.videos" to "Google TV / Play Movies",
-    "com.google.android.apps.mediashell" to "Chromecast (cast from phone)",
-    "com.google.android.katniss" to "Google Assistant (voice)",
-    "com.google.android.apps.tv.dreamx" to "Google screensaver",
-    "com.google.android.backdrop" to "Backdrop screensaver",
+    "com.google.android.apps.mediashell" to "Chromecast (transmitir desde el teléfono)",
+    "com.google.android.katniss" to "Asistente de Google (voz)",
+    "com.google.android.apps.tv.dreamx" to "Protector de pantalla de Google",
+    "com.google.android.backdrop" to "Protector de pantalla Backdrop",
     "com.android.vending" to "Play Store",
-    "com.google.android.tvlauncher" to "Stock Home (Android TV)",
-    "com.google.android.apps.tv.launcherx" to "Stock Home (Google TV)",
-    "com.gathin.tvhome" to "Clean Home (CleanYourTV)",
-    "com.ts.launcher" to "Clean Home (Xiaomi build)",
+    "com.google.android.tvlauncher" to "Inicio de fábrica (Android TV)",
+    "com.google.android.apps.tv.launcherx" to "Inicio de fábrica (Google TV)",
+    "com.gathin.tvhome" to "Inicio limpio (CleanYourTV)",
+    "com.ts.launcher" to "Inicio limpio (versión Xiaomi)",
 )
 
 fun tenDep(pkg: String): String = (if (!zone.vgs.tvsach.NgonNgu.tiengViet) TEN_APP_EN[pkg] else null) ?: TEN_APP[pkg] ?: pkg.substringAfterLast('.')

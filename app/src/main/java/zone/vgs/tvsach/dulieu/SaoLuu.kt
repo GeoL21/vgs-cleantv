@@ -63,7 +63,7 @@ class KhoSaoLuu(context: Context) {
     fun ghi(b: BanSaoLuu) {
         val tam = File(thuMuc, "${b.khoa}.json.tam")
         tam.writeText(b.toJson().toString(1))
-        if (!tam.renameTo(file(b.khoa))) error("Không ghi được bản sao lưu")
+        if (!tam.renameTo(file(b.khoa))) error("No se pudo guardar el respaldo")
     }
 
     fun tatCa(): List<BanSaoLuu> = thuMuc.listFiles { f -> f.name.endsWith(".json") }

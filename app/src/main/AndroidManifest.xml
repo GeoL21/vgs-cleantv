@@ -15,7 +15,7 @@
 
     <application
         android:banner="@drawable/banner_tv"
-        android:label="CleanTV"
+        android:label="TuneTV"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:theme="@style/Theme.TvSach"

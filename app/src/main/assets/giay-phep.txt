@@ -1,3 +1,11 @@
+TuneTV by GeoL
+Versión en español de CleanTV (AlexVGS / Vietnam Gaming Setup), basada en CleanYourTV (Gathin). Licencia MIT.
+Código: https://github.com/GeoL21/tunetv · Original: https://github.com/vgscity/vgs-cleantv
+En TuneTV los conteos anónimos y la actualización automática están apagados: la app no envía nada por su cuenta.
+Software libre, se entrega tal cual, sin garantía.
+
+---- Aviso original de CleanTV ----
+
 CleanTV — AlexVGS / Vietnam Gaming Setup, 2026.
 Phần mềm miễn phí, cung cấp nguyên trạng, không kèm bảo hành. / Free software, provided "as is", without warranty.
 

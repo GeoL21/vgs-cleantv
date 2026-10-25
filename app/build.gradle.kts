@@ -19,15 +19,24 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "zone.vgs.cleantv"
+        applicationId = "io.github.geol21.tunetv"
         minSdk = 26
         targetSdk = 35
-        versionCode = 79
-        versionName = "2.10.11"
+        // TuneTV by GeoL: basada en CleanTV 2.10.11 de VGS.
+        versionCode = 1
+        versionName = "1.0"
         ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
     }
 
     signingConfigs {
+        // TuneTV: firma pública incluida en el repo, para que GitHub compile siempre con la misma llave
+        // y las actualizaciones se instalen encima. No es secreta: sirve para uso personal y familiar.
+        create("tunetv") {
+            storeFile = rootProject.file("firma/tunetv-publica.jks")
+            storePassword = "tunetv-publica"
+            keyAlias = "tunetv"
+            keyPassword = "tunetv-publica"
+        }
         if (kyFile.exists()) {
             create("vgs") {
                 storeFile = rootProject.file(ky.getProperty("storeFile"))
@@ -45,7 +54,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.findByName("vgs") ?: signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("vgs") ?: signingConfigs.getByName("tunetv")
         }
     }
 

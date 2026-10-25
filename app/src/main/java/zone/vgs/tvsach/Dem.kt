@@ -12,6 +12,8 @@ import java.util.UUID
  * Máy chủ: Cloudflare Worker cleantv-dem (tv-sach/dem). Gửi lỗi thì thôi, không ảnh hưởng gì.
  */
 object Dem {
+    /** TuneTV: conteos anónimos apagados. */
+    const val APAGADO = true
     private const val DIA_CHI = "https://cleantv-dem.vgszone.workers.dev/su-kien"
 
     private fun maMay(ctx: Context): String {
@@ -20,6 +22,8 @@ object Dem {
     }
 
     fun gui(ctx: Context, loai: String, tivi: String = "", so: Int = 0, them: String = "") {
+        // TuneTV: los conteos anónimos están apagados, no se envía nada.
+        if (APAGADO) return
         val app = ctx.applicationContext
         Thread {
             runCatching {

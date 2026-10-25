@@ -5,15 +5,15 @@ import zone.vgs.tvsach.t
 /** Nhóm hiển thị trên màn chọn gói. */
 enum class LoaiMuc(private val vi: Pair<String, String>, private val en: Pair<String, String>) {
     MAU("Theo danh sách đã thử" to "Người dùng cùng dòng tivi đã tắt và chạy ổn.",
-        "From a tested list" to "Owners of this TV model disabled these and it kept working."),
+        "De una lista probada" to "Dueños de este modelo de TV las desactivaron y siguió funcionando."),
     GOOGLE_HOME("Google Home & truyền từ điện thoại" to "Tắt là app Google Home trên điện thoại không thấy tivi, không điều khiển hay cast được. Chỉ tích nếu nhà không dùng.",
-        "Google Home & casting from phones" to "Disable these and the Google Home phone app can't find, control or cast to the TV. Tick only if nobody uses that."),
+        "Google Home y transmitir desde el teléfono" to "Si las desactivas, la app Google Home del teléfono no podrá encontrar, controlar ni transmitir a la TV. Márcalas solo si nadie lo usa."),
     GIONG_NOI("Tìm kiếm giọng nói & Trợ lý Google" to "Tắt là nút mic trên remote hết dùng được (chỉ còn tìm bằng giọng trong YouTube). Chỉ tích nếu nhà không dùng.",
-        "Voice search & Google Assistant" to "Disable these and the remote's mic button stops working (voice still works inside YouTube). Tick only if nobody uses it."),
+        "Búsqueda por voz y Asistente de Google" to "Si las desactivas, el botón de micrófono del control deja de funcionar (la voz sigue funcionando dentro de YouTube). Márcalas solo si nadie lo usa."),
     UNG_DUNG("Ứng dụng có biểu tượng" to "Hỏi chủ nhà: chỉ tích app họ KHÔNG dùng.",
-        "Apps with an icon" to "Ask the owner: tick only apps they do NOT use."),
+        "Apps con ícono" to "Pregúntale al dueño: marca solo las apps que NO usa."),
     CHUNG("Gói hệ thống hay bị tắt" to "Đã tắt trên nhiều mẫu tivi khác.",
-        "Commonly disabled system packages" to "Disabled on many other TV models.");
+        "Paquetes del sistema que suelen desactivarse" to "Desactivados en muchos otros modelos de TV.");
 
     val tieuDe: String get() = t(vi.first, en.first)
     val moTa: String get() = t(vi.second, en.second)
@@ -136,7 +136,7 @@ object KeHoach {
                 loai = if (laApp) LoaiMuc.UNG_DUNG else LoaiMuc.MAU,
                 nhom = g.nhom,
                 ghiChu = if (THEO_Y_RIENG.containsMatchIn(g.nhom))
-                    listOf(t("Người làm danh sách tắt theo ý riêng.", "Off by the list author's own choice."), g.ghiChu).filter { it.isNotBlank() }.joinToString(" ")
+                    listOf("Apagado por decisión del autor de la lista.", g.ghiChu).filter { it.isNotBlank() }.joinToString(" ")
                 else g.ghiChu,
                 soMauTat = tk.soMauTat, soMauGiu = tk.soMauGiu,
                 chonSan = !laApp && !THEO_Y_RIENG.containsMatchIn(g.nhom),
@@ -170,7 +170,7 @@ object KeHoach {
         // 4) Giọng nói / Trợ lý: nhóm riêng, không tự tích.
         for ((p, m) in ketQua.entries.toList()) {
             if (!GIONG_NOI.containsMatchIn(p)) continue
-            val canh = t("Nút mic trên remote cần gói này.", "The remote's mic button needs this.")
+            val canh = "El botón de micrófono del control lo necesita."
             ketQua[p] = m.copy(loai = LoaiMuc.GIONG_NOI, chonSan = false,
                 ghiChu = listOf(canh, m.ghiChu.ifBlank { m.nhom }).filter { it.isNotBlank() }.joinToString(" "))
         }
@@ -180,14 +180,14 @@ object KeHoach {
         // networksettings…). upstream examples/sony-kdl-43w950d cố ý để nguyên cả nhóm này trên bo SVP-DTV15.
         for ((p, m) in ketQua.entries.toList()) {
             if (!SONY_CAI_DAT.matches(p)) continue
-            val canh = t("Màn Cài đặt của tivi Sony có thể cần gói này.", "Sony's Settings screen may need this.")
+            val canh = "La pantalla de Ajustes de Sony puede necesitarlo."
             ketQua[p] = m.copy(chonSan = false, ghiChu = listOf(canh, m.ghiChu.ifBlank { m.nhom }).filter { it.isNotBlank() }.joinToString(" "))
         }
 
         // 5) Google Home / cast: nhóm riêng, không tự tích, ghi rõ hậu quả.
         for ((p, m) in ketQua.entries.toList()) {
             if (!laGoiGoogleHome(p)) continue
-            val canh = t("Google Home / cast cần gói này.", "Google Home / casting needs this.")
+            val canh = "Google Home / transmitir pantalla lo necesita."
             ketQua[p] = m.copy(loai = LoaiMuc.GOOGLE_HOME, chonSan = false,
                 ghiChu = listOf(canh, m.ghiChu.ifBlank { m.nhom }).filter { it.isNotBlank() }.joinToString(" "))
         }

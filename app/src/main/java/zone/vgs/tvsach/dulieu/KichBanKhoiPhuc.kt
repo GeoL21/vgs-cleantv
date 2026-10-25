@@ -16,37 +16,36 @@ object KichBanKhoiPhuc {
         fun t(v: String, e: String) = if (vi) v else e
         val dong = mutableListOf<String>()
         fun chu(s: String) { dong += ": $s" }
-        chu(t("CleanTV: kịch bản khôi phục cho ${sl.ten}", "CleanTV: restore script for ${sl.ten}"))
-        chu(t("Cần adb (Android platform-tools). Windows: bấm đúp file này. Mac / Linux: sh tên-file.bat",
-            "Needs adb (Android platform-tools). Windows: double-click this file. Mac / Linux: sh file-name.bat"))
-        chu(t("Tivi phải bật Gỡ lỗi USB. Sai IP thì sửa dòng adb connect bên dưới.", "USB debugging must be on. If the IP changed, edit the adb connect line below."))
+        chu("TuneTV: script de restauración para ${sl.ten}")
+        chu("Necesita adb (Android platform-tools). Windows: doble clic en este archivo. Mac / Linux: sh nombre-del-archivo.bat")
+        chu("La depuración USB debe estar activada. Si la IP cambió, edita abajo la línea adb connect.")
         dong += "adb connect ${sl.ip}:5555"
         val goi = sl.daTatBoiApp.filter { TEN_GOI.matches(it) }
-        if (goi.isNotEmpty()) chu(t("Bật lại ${goi.size} gói CleanTV đã tắt", "Re-enable the ${goi.size} packages CleanTV disabled"))
+        if (goi.isNotEmpty()) chu("Reactivar los ${goi.size} paquetes que TuneTV desactivó")
         goi.forEach { dong += "adb shell pm enable --user 0 $it" }
         if (sl.launcherDaCai && THANH_PHAN.matches(sl.homeTruoc) && HOME_SACH.none { sl.homeTruoc.startsWith("$it/") }) {
-            chu(t("Trả Home gốc", "Restore the stock Home"))
+            chu("Restaurar el inicio de fábrica")
             dong += "adb shell cmd package set-home-activity --user 0 ${sl.homeTruoc}"
         }
         if (sl.launcherDaCai) {
-            chu(t("Trả dịch vụ trợ năng như trước", "Put the accessibility services back as before"))
+            chu("Dejar los servicios de accesibilidad como estaban")
             val tc = sl.truyCapTruoc
             dong += if (tc.isBlank() || tc == "null" || !Regex("^[A-Za-z0-9_.:/$]+$").matches(tc)) "adb shell settings delete secure enabled_accessibility_services"
             else "adb shell settings put secure enabled_accessibility_services $tc"
-            chu(t("Muốn gỡ luôn Home sạch thì bỏ \": \" ở đầu dòng dưới", "To also uninstall the clean Home, remove the \": \" at the start of the next line"))
+            chu("Para desinstalar también el inicio limpio, quita los \": \" del comienzo de la siguiente línea")
             HOME_SACH.forEach { chu("adb uninstall $it") }
         }
         if (sl.dnsDaDoi) {
-            chu(t("Trả DNS như cũ", "Restore DNS"))
+            chu("Restaurar DNS")
             val mode = sl.dnsModeTruoc.takeIf { it.isNotBlank() && it != "null" && TEN_GOI.matches(it) } ?: "opportunistic"
             dong += "adb shell settings put global private_dns_mode $mode"
             dong += if (sl.dnsHostTruoc.isBlank() || sl.dnsHostTruoc == "null" || !TEN_GOI.matches(sl.dnsHostTruoc)) "adb shell settings delete global private_dns_specifier"
             else "adb shell settings put global private_dns_specifier ${sl.dnsHostTruoc}"
         }
-        chu(t("Gỡ Khoá trẻ em nếu có cài (chưa cài thì báo lỗi, không sao)", "Remove the Kids lock if installed (an error here is fine)"))
+        chu("Quitar el bloqueo infantil si está instalado (si aquí sale un error, no pasa nada)")
         dong += "adb uninstall $PKG_KHOA"
         dong += "adb shell input keyevent KEYCODE_HOME"
-        chu(t("Xong. Nên tắt Gỡ lỗi USB trên tivi.", "Done. Turn USB debugging off on the TV."))
+        chu("Listo. Apaga la depuración USB en la TV.")
         return dong.joinToString("\r\n", postfix = "\r\n")
     }
 }

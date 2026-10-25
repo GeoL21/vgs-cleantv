@@ -33,7 +33,7 @@ class KetNoiAdb private constructor(
 
     override fun getPrivateKey(): PrivateKey = khoa
     override fun getCertificate(): Certificate = chungChi
-    override fun getDeviceName(): String = "CleanTV"
+    override fun getDeviceName(): String = "TuneTV"
 
     /** Địa chỉ của lần kết nối thành công gần nhất (cả Gỡ lỗi không dây, connectTls cũng đi qua đây). */
     @Volatile var diemCuoi: Pair<String, Int>? = null
@@ -90,7 +90,7 @@ class KetNoiAdb private constructor(
         runCatching { stream.close() }
         if (luong.isAlive) {
             luong.interrupt()
-            throw java.io.IOException("Tivi không trả lời sau $giay giây")
+            throw java.io.IOException("La TV no respondió después de $giay segundos")
         }
         return synchronized(out) { out.toString("UTF-8") }.replace("\r", "")
     }
@@ -126,7 +126,7 @@ class KetNoiAdb private constructor(
         val b64 = android.util.Base64.encodeToString(noiDung, android.util.Base64.NO_WRAP)
         b64.chunked(3000).forEach { manh -> shell("printf '%s' '$manh' >> $duongDan.b64") }
         shell("base64 -d $duongDan.b64 > $duongDan; rm -f $duongDan.b64")
-        if (shell("wc -c < $duongDan").trim().toIntOrNull() != noiDung.size) throw java.io.IOException("Tivi không nhận file ${duongDan.substringAfterLast('/')}")
+        if (shell("wc -c < $duongDan").trim().toIntOrNull() != noiDung.size) throw java.io.IOException("La TV no recibió el archivo ${duongDan.substringAfterLast('/')}")
     }
 
     /** Tivi có `head -c` không, hỏi một lần mỗi kết nối. */

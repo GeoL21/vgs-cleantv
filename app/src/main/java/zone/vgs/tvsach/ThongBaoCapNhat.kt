@@ -28,6 +28,8 @@ object ThongBaoCapNhat {
     const val MO_CAP_NHAT = "mo_cap_nhat"
 
     fun hen(ctx: Context) {
+        // TuneTV: sin revisión automática de versiones; cancela la que hubiera quedado programada.
+        if (CapNhat.APAGADO) { WorkManager.getInstance(ctx).cancelUniqueWork("kiem-tra-ban-moi"); return }
         val viec = PeriodicWorkRequestBuilder<KiemTraBanMoi>(12, TimeUnit.HOURS)
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
             .setInitialDelay(1, TimeUnit.HOURS)
@@ -42,17 +44,17 @@ object ThongBaoCapNhat {
             ctx.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
         val nm = ctx.getSystemService(NotificationManager::class.java)
         if (Build.VERSION.SDK_INT >= 26) {
-            nm.createNotificationChannel(NotificationChannel(KENH, t("Bản mới của app", "App updates"), NotificationManager.IMPORTANCE_DEFAULT))
+            nm.createNotificationChannel(NotificationChannel(KENH, "Actualizaciones de apps", NotificationManager.IMPORTANCE_DEFAULT))
         }
         val mo = PendingIntent.getActivity(ctx, 1,
             Intent(ctx, MainActivity::class.java).putExtra(MO_CAP_NHAT, true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val tb = NotificationCompat.Builder(ctx, KENH)
             .setSmallIcon(R.drawable.ic_thong_bao)
-            .setContentTitle(t("CleanTV ${b.versionName} đã có", "CleanTV ${b.versionName} is out"))
-            .setContentText(b.ghiChu.ifBlank { t("Chạm để cập nhật.", "Tap to update.") })
+            .setContentTitle("Ya salió TuneTV ${b.versionName}")
+            .setContentText(b.ghiChu.ifBlank { "Toca para actualizar." })
             .setStyle(NotificationCompat.BigTextStyle().bigText(
-                (if (b.ghiChu.isNotBlank()) b.ghiChu + "\n" else "") + t("Chạm để cập nhật.", "Tap to update.")))
+                (if (b.ghiChu.isNotBlank()) b.ghiChu + "\n" else "") + "Toca para actualizar."))
             .setColor(0xFF8B5CF6.toInt())
             .setContentIntent(mo)
             .setAutoCancel(true)
