@@ -18,7 +18,7 @@ object KichBanKhoiPhuc {
         fun chu(s: String) { dong += ": $s" }
         chu("TuneTV: script de restauración para ${sl.ten}")
         chu("Necesita adb (Android platform-tools). Windows: doble clic en este archivo. Mac / Linux: sh nombre-del-archivo.bat")
-        chu("La depuración USB debe estar activada. Si la IP cambió, edita abajo la línea adb connect.")
+        chu("La depuración por USB debe estar activada. Si la IP cambió, edita abajo la línea adb connect.")
         dong += "adb connect ${sl.ip}:5555"
         val goi = sl.daTatBoiApp.filter { TEN_GOI.matches(it) }
         if (goi.isNotEmpty()) chu("Reactivar los ${goi.size} paquetes que TuneTV desactivó")
@@ -45,7 +45,7 @@ object KichBanKhoiPhuc {
         chu("Quitar el bloqueo infantil si está instalado (si aquí sale un error, no pasa nada)")
         dong += "adb uninstall $PKG_KHOA"
         dong += "adb shell input keyevent KEYCODE_HOME"
-        chu("Listo. Apaga la depuración USB en la TV.")
+        chu("Listo. Apaga la depuración por USB en la TV.")
         return dong.joinToString("\r\n", postfix = "\r\n")
     }
 }

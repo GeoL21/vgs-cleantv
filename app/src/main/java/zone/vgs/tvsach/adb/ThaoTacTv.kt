@@ -338,7 +338,7 @@ class ThaoTacTv(private val adb: KetNoiAdb, private val kho: KhoSaoLuu) {
                 out = voiHan(120) { sh("pm install -r /data/local/tmp/tvhome.apk; rm -f /data/local/tmp/tvhome.apk") }
             }
         }
-        if (out.contains("TIMEOUT")) return "Instalar el inicio limpio tardó más de 2 minutos: puede que Android esté mostrando un aviso de verificación de apps (Play Protect) detrás de la app. En Opciones de desarrollador apaga \"Verificar apps por USB\" (o el análisis de Play Protect) e inténtalo de nuevo. El inicio de fábrica no se tocó."
+        if (out.contains("TIMEOUT")) return "Instalar el inicio limpio tardó más de 2 minutos: puede que Android esté mostrando un aviso de verificación de apps (Play Protect) detrás de la app. En Opciones para desarrolladores apaga \"Verificar apps por USB\" (o el análisis de Play Protect) e inténtalo de nuevo. El inicio de fábrica no se tocó."
         if (!out.contains("Success")) {
             return if (out.contains("UPDATE_INCOMPATIBLE"))
                 "La TV tiene un inicio limpio firmado con otra llave (instalado desde otro computador). Desinstálalo primero: pm uninstall $pkgHome."

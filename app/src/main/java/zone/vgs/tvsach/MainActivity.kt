@@ -31,7 +31,11 @@ class MainActivity : ComponentActivity() {
                 xinThongBao.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
-        enableEdgeToEdge()
+        // TuneTV: diseño claro, íconos oscuros en las barras del sistema.
+        enableEdgeToEdge(
+            statusBarStyle = androidx.activity.SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
+            navigationBarStyle = androidx.activity.SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
+        )
         setContent { UngDung() }
     }
 

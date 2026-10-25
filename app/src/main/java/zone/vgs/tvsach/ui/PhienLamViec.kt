@@ -366,13 +366,13 @@ class PhienLamViec(app: Application) : AndroidViewModel(app) {
         e is AdbPairingRequiredException -> "La TV necesita vinculación (Depuración inalámbrica). Usa \"Vincular con código\" abajo."
         // Chế độ chạy trên tivi: nhiều tivi (TCL…) bật Gỡ lỗi USB chỉ mở ADB qua dây, cổng 5555 chưa nghe (22/10/2026).
         laLoiTuChoi(e) && ip.trim() == "127.0.0.1" ->
-            "La TV no ha abierto ADB por red (puerto 5555), así que la app en la TV no se puede conectar a sí misma. Solución: en Opciones de desarrollador activa también \"Depuración de red\" / \"ADB por red\" (si existe) y vuelve a Conectar. Si la TV solo tiene \"Depuración inalámbrica\", usa TuneTV en un teléfono con Vincular con código. O conecta la TV a un computador y ejecuta adb tcpip 5555 una vez."
+            "La TV no ha abierto ADB por red (puerto 5555), así que la app en la TV no se puede conectar a sí misma. Solución: en Opciones para desarrolladores activa también \"Depuración de red\" / \"ADB por red\" (si existe) y vuelve a Conectar. Si la TV solo tiene \"Depuración inalámbrica\", usa TuneTV en un teléfono con Vincular con código. O conecta la TV a un computador y ejecuta adb tcpip 5555 una vez."
         laLoiTuChoi(e) ->
-            "La TV rechazó la conexión en este puerto. Revisa que la depuración USB / de red esté activada."
+            "La TV rechazó la conexión en este puerto. Revisa que la depuración por USB / de red esté activada."
         e.message?.contains("EHOSTUNREACH") == true || e.message?.contains("No route") == true ->
             "No se encuentra la TV. El teléfono y la TV deben estar en el mismo Wi‑Fi."
         e is java.net.SocketTimeoutException || e.message?.contains("timed out") == true ->
-            "Se acabó el tiempo. Puede que la TV esté mostrando \"¿Permitir depuración?\": pulsa Permitir e inténtalo de nuevo."
+            "Se acabó el tiempo. Puede que la TV esté mostrando \"¿Permitir la depuración?\": pulsa Permitir e inténtalo de nuevo."
         else -> listOfNotNull(e.message, e.cause?.message).firstOrNull()
             ?: "Error de conexión (${e.javaClass.simpleName}). Revisa la IP, el puerto y que la TV esté encendida."
     }
@@ -419,7 +419,7 @@ class PhienLamViec(app: Application) : AndroidViewModel(app) {
         return lp.linkAddresses.map { it.address }.filterIsInstance<Inet4Address>().firstOrNull()?.hostAddress
     }
 
-    fun ketNoi() = chay("Conectando… Si la TV muestra \"¿Permitir depuración USB?\", marca \"Permitir siempre\" y pulsa Permitir.") {
+    fun ketNoi() = chay("Conectando… Si la TV muestra \"¿Permitir depuración por USB?\", marca \"Permitir siempre\" y pulsa Permitir.") {
         val host = ip.trim(); val port = cong.trim().toIntOrNull() ?: 5555
         daTuTatAdb = false
         if (host.isEmpty()) error("Escribe la dirección IP de la TV.")
@@ -1098,7 +1098,7 @@ class PhienLamViec(app: Application) : AndroidViewModel(app) {
         runCatching { io { adb.disconnect() } }
         val host = ip
         val conMo = io { Thread.sleep(2500); moCong(host, 5555, 1500) }
-        loi = if (conMo) "El puerto 5555 sigue abierto. En Opciones de desarrollador de la TV, apaga la depuración USB / de red y reinicia."
+        loi = if (conMo) "El puerto 5555 sigue abierto. En Opciones para desarrolladores de la TV, apaga la depuración por USB / de red y reinicia."
         else ""
         thongBao = ""
         datLai()

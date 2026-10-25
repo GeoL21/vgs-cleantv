@@ -23,8 +23,8 @@ android {
         minSdk = 26
         targetSdk = 35
         // TuneTV by GeoL: basada en CleanTV 2.10.11 de VGS.
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
         ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
     }
 

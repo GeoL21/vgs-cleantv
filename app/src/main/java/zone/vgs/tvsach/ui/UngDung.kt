@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -64,23 +65,49 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// ---------------- Màu (gradient tím–hồng như logo) ----------------
+// ---------------- Colores TuneTV: estilo plano y claro, azul como color principal ----------------
 
-private val Tim = Color(0xFF7C3AED)
-private val Hong = Color(0xFFEC4899)
-private val Xanh = Color(0xFF22C55E)
-private val Cam = Color(0xFFF59E0B)
-private val Nen = Color(0xFF0B0B10)
-private val The1 = Color(0xFF15151C)
-private val The2 = Color(0xFF1E1E28)
-private val ChuPhu = Color(0xFFA1A1B5)
-private val Vien = Color(0xFF2A2A36)
-private val Gradient = Brush.linearGradient(listOf(Tim, Hong))
+private val Tim = Color(0xFF2563EB)      // azul principal
+private val Hong = Color(0xFF1D4ED8)     // azul más oscuro para íconos y acentos
+private val Xanh = Color(0xFF16A34A)     // verde: listo
+private val Cam = Color(0xFFB45309)      // ámbar: avisos
+private val Nen = Color(0xFFF8FAFC)      // fondo
+private val The1 = Color(0xFFFFFFFF)     // tarjetas
+private val The2 = Color(0xFFF1F5FD)     // superficies suaves
+private val ChuPhu = Color(0xFF475569)   // texto secundario
+private val Vien = Color(0xFFE2E8F0)     // bordes
+private val Chu = Color(0xFF0F172A)      // texto principal
+private val NenCanhBao = Color(0xFFFEF3C7)
+private val ChuCanhBao = Color(0xFF78350F)
+private val NenLoi = Color(0xFFFEE2E2)
+private val Gradient = Brush.linearGradient(listOf(Tim, Tim))
 private val NenXam = Brush.linearGradient(listOf(The2, The2))
 
-private val BangMau = darkColorScheme(
-    primary = Tim, onPrimary = Color.White, secondary = Hong, background = Nen, surface = The1,
-    surfaceVariant = The2, onSurfaceVariant = ChuPhu, outline = Vien,
+private val OpenSans = FontFamily(
+    Font(R.font.open_sans_400, FontWeight.Normal), Font(R.font.open_sans_600, FontWeight.Medium),
+    Font(R.font.open_sans_600, FontWeight.SemiBold), Font(R.font.open_sans_700, FontWeight.Bold),
+    Font(R.font.open_sans_800, FontWeight.ExtraBold), Font(R.font.open_sans_800, FontWeight.Black),
+)
+private val Poppins = FontFamily(
+    Font(R.font.poppins_500, FontWeight.Medium), Font(R.font.poppins_600, FontWeight.SemiBold),
+    Font(R.font.poppins_700, FontWeight.Bold), Font(R.font.poppins_700, FontWeight.Black),
+)
+private val Chu_ = androidx.compose.material3.Typography().let { t ->
+    fun androidx.compose.ui.text.TextStyle.os() = copy(fontFamily = OpenSans)
+    fun androidx.compose.ui.text.TextStyle.pp() = copy(fontFamily = Poppins)
+    t.copy(
+        displayLarge = t.displayLarge.pp(), displayMedium = t.displayMedium.pp(), displaySmall = t.displaySmall.pp(),
+        headlineLarge = t.headlineLarge.pp(), headlineMedium = t.headlineMedium.pp(), headlineSmall = t.headlineSmall.pp(),
+        titleLarge = t.titleLarge.pp(), titleMedium = t.titleMedium.os(), titleSmall = t.titleSmall.os(),
+        bodyLarge = t.bodyLarge.os(), bodyMedium = t.bodyMedium.os(), bodySmall = t.bodySmall.os(),
+        labelLarge = t.labelLarge.os(), labelMedium = t.labelMedium.os(), labelSmall = t.labelSmall.os(),
+    )
+}
+
+private val BangMau = lightColorScheme(
+    primary = Tim, onPrimary = Color.White, secondary = Hong, background = Nen, onBackground = Chu, surface = The1,
+    onSurface = Chu, surfaceVariant = The2, onSurfaceVariant = ChuPhu, outline = Vien,
+    surfaceContainerHigh = The1, surfaceContainerHighest = The2,
 )
 
 // ---------------- Khung ----------------
@@ -90,10 +117,10 @@ private val BangMau = darkColorScheme(
 fun UngDung(vm: PhienLamViec = viewModel()) {
     val ctx = LocalContext.current
     LaunchedEffect(Unit) { NgonNgu.nap(ctx) }
-    MaterialTheme(colorScheme = BangMau) {
+    MaterialTheme(colorScheme = BangMau, typography = Chu_) {
         // Chế độ tivi: đi bằng remote nên ô đang chọn phải thấy rõ — lớp sáng khi focus đậm hơn hẳn mặc định.
         val gon = if (zone.vgs.tvsach.ManHinh.laTv)
-            androidx.compose.material3.RippleConfiguration(Color.White, androidx.compose.material.ripple.RippleAlpha(0.3f, 0.35f, 0.3f, 0.2f))
+            androidx.compose.material3.RippleConfiguration(Tim, androidx.compose.material.ripple.RippleAlpha(0.25f, 0.3f, 0.25f, 0.2f))
         else androidx.compose.material3.LocalRippleConfiguration.current
         androidx.compose.runtime.CompositionLocalProvider(androidx.compose.material3.LocalRippleConfiguration provides gon) {
         Surface(Modifier.fillMaxSize(), color = Nen) {
@@ -195,8 +222,9 @@ private fun ThanhTren(vm: PhienLamViec) {
         } else Spacer(Modifier.width(12.dp))
         Image(painterResource(R.drawable.logo_cleantv), "TuneTV", Modifier.size(32.dp))
         Spacer(Modifier.width(8.dp))
-        Text("Clean", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-        Text("TV", fontWeight = FontWeight.Black, fontSize = 20.sp, color = Hong)
+        Text("Tune", fontWeight = FontWeight.SemiBold, fontSize = 20.sp, fontFamily = Poppins)
+        Text("TV", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Tim, fontFamily = Poppins)
+        Text(" by GeoL", fontSize = 13.sp, color = ChuPhu, modifier = Modifier.padding(top = 3.dp))
         Spacer(Modifier.weight(1f))
         val ten = vm.thongTin?.tenHienThi
         if (vm.man != Man.CHINH && ten != null) {
@@ -209,16 +237,14 @@ private fun ThanhTren(vm: PhienLamViec) {
 /** Thanh 4 bước: Kết nối · Chọn · Dọn · Home. */
 @Composable
 private fun ThanhBuoc(dangO: Int) {
-    val ten = listOf("Conectar", "Elegir", "Limpiar", "Home")
-    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 8.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        ten.forEachIndexed { i, s ->
-            Column(Modifier.weight(1f)) {
-                Box(Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp))
-                    .background(if (i <= dangO) Gradient else Brush.linearGradient(listOf(Vien, Vien))))
-                Text(s, fontSize = 11.sp, color = if (i == dangO) Color.White else ChuPhu, modifier = Modifier.padding(top = 4.dp),
-                    fontWeight = if (i == dangO) FontWeight.SemiBold else FontWeight.Normal)
+    val ten = listOf("Conectar", "Elegir", "Limpiar", "Inicio")
+    Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 10.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            ten.indices.forEach { i ->
+                Box(Modifier.weight(1f).height(4.dp).clip(RoundedCornerShape(2.dp)).background(if (i <= dangO) Tim else Vien))
             }
         }
+        Text("Paso ${dangO + 1} de 4 · ${ten[dangO]}", fontSize = 12.sp, color = ChuPhu, modifier = Modifier.padding(top = 6.dp))
     }
 }
 
@@ -226,8 +252,8 @@ private fun ThanhBuoc(dangO: Int) {
 private fun ThanhTrangThai(vm: PhienLamViec) {
     val laLoi = vm.loi.isNotEmpty()
     Row(Modifier.fillMaxWidth().padding(12.dp).clip(RoundedCornerShape(14.dp))
-        .background(if (laLoi) Color(0xFF3A1320) else The2).padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-        if (laLoi) Icon(Icons.Rounded.ErrorOutline, null, tint = Hong)
+        .background(if (laLoi) NenLoi else The2).padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+        if (laLoi) Icon(Icons.Rounded.ErrorOutline, null, tint = Color(0xFFB91C1C))
         else CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
         Spacer(Modifier.width(12.dp))
         Text(if (laLoi) vm.loi else vm.thongBao, Modifier.weight(1f), fontSize = 14.sp)
@@ -246,11 +272,16 @@ private fun Cuon(noiDung: @Composable ColumnScope.() -> Unit) {
 
 @Composable
 private fun The(tieuDe: String? = null, icon: ImageVector? = null, noiDung: @Composable ColumnScope.() -> Unit) {
-    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(The1).border(1.dp, Vien, RoundedCornerShape(20.dp)).padding(18.dp),
+    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(The1).border(1.dp, Vien, RoundedCornerShape(16.dp)).padding(18.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)) {
         if (tieuDe != null) Row(verticalAlignment = Alignment.CenterVertically) {
-            if (icon != null) { Icon(icon, null, Modifier.size(20.dp), tint = Hong); Spacer(Modifier.width(8.dp)) }
-            Text(tieuDe, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            if (icon != null) {
+                Box(Modifier.size(32.dp).clip(RoundedCornerShape(10.dp)).background(The2), contentAlignment = Alignment.Center) {
+                    Icon(icon, null, Modifier.size(18.dp), tint = Tim)
+                }
+                Spacer(Modifier.width(10.dp))
+            }
+            Text(tieuDe, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, fontFamily = Poppins)
         }
         noiDung()
     }
@@ -259,21 +290,22 @@ private fun The(tieuDe: String? = null, icon: ImageVector? = null, noiDung: @Com
 @Composable
 private fun NutChinh(chu: String, modifier: Modifier = Modifier, enabled: Boolean = true, icon: ImageVector? = null, onClick: () -> Unit) {
     val mo = if (enabled) 1f else 0.4f
-    Box(modifier.fillMaxWidth().height(56.dp).clip(RoundedCornerShape(16.dp)).background(Gradient, alpha = mo)
+    Box(modifier.fillMaxWidth().height(52.dp).clip(RoundedCornerShape(12.dp)).background(Tim.copy(alpha = mo))
         .clickable(enabled = enabled, onClick = onClick), contentAlignment = Alignment.Center) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (icon != null) { Icon(icon, null, tint = Color.White.copy(alpha = mo)); Spacer(Modifier.width(8.dp)) }
-            Text(chu, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White.copy(alpha = mo))
+            if (icon != null) { Icon(icon, null, tint = Color.White); Spacer(Modifier.width(8.dp)) }
+            Text(chu, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.White)
         }
     }
 }
 
 @Composable
 private fun NutPhu(chu: String, icon: ImageVector? = null, enabled: Boolean = true, onClick: () -> Unit) {
-    OutlinedButton(onClick = onClick, enabled = enabled, modifier = Modifier.fillMaxWidth().height(50.dp),
-        shape = RoundedCornerShape(14.dp), border = BorderStroke(1.dp, Vien)) {
-        if (icon != null) { Icon(icon, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)) }
-        Text(chu, color = Color.White)
+    OutlinedButton(onClick = onClick, enabled = enabled, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+        shape = RoundedCornerShape(12.dp), border = BorderStroke(1.dp, Vien),
+        colors = ButtonDefaults.outlinedButtonColors(containerColor = The1, contentColor = Chu)) {
+        if (icon != null) { Icon(icon, null, Modifier.size(18.dp), tint = Tim); Spacer(Modifier.width(8.dp)) }
+        Text(chu, color = if (enabled) Chu else ChuPhu, textAlign = TextAlign.Center)
     }
 }
 
@@ -283,7 +315,7 @@ private fun Phu(chu: String, mau: Color = ChuPhu) = Text(chu, fontSize = 13.sp, 
 @Composable
 private fun OIcon(icon: ImageVector, size: Dp = 44.dp, nen: Brush = Gradient) {
     Box(Modifier.size(size).clip(RoundedCornerShape(size / 3.2f)).background(nen), contentAlignment = Alignment.Center) {
-        Icon(icon, null, tint = Color.White, modifier = Modifier.size(size * 0.5f))
+        Icon(icon, null, tint = if (nen === NenXam) Tim else Color.White, modifier = Modifier.size(size * 0.5f))
     }
 }
 
@@ -296,9 +328,9 @@ private fun Chip(chu: String, mau: Color = ChuPhu) {
 @Composable
 private fun Gap(tieuDe: String, icon: ImageVector, moSan: Boolean = false, noiDung: @Composable ColumnScope.() -> Unit) {
     var mo by rememberSaveable(icon.name) { mutableStateOf(moSan) }
-    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(The1).border(1.dp, Vien, RoundedCornerShape(20.dp))) {
+    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(The1).border(1.dp, Vien, RoundedCornerShape(16.dp))) {
         Row(Modifier.fillMaxWidth().clickable { mo = !mo }.padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, null, Modifier.size(20.dp), tint = Hong); Spacer(Modifier.width(10.dp))
+            Icon(icon, null, Modifier.size(20.dp), tint = Tim); Spacer(Modifier.width(10.dp))
             Text(tieuDe, Modifier.weight(1f), fontWeight = FontWeight.SemiBold)
             Icon(if (mo) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore, null, tint = ChuPhu)
         }
@@ -311,8 +343,8 @@ private fun Gap(tieuDe: String, icon: ImageVector, moSan: Boolean = false, noiDu
 @Composable
 private fun BuocSo(so: Int, chu: String) {
     Row {
-        Box(Modifier.size(24.dp).clip(CircleShape).background(The2), contentAlignment = Alignment.Center) {
-            Text("$so", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Hong)
+        Box(Modifier.size(24.dp).clip(CircleShape).background(Tim), contentAlignment = Alignment.Center) {
+            Text("$so", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
         }
         Spacer(Modifier.width(10.dp))
         Text(chu, fontSize = 14.sp, lineHeight = 20.sp, modifier = Modifier.weight(1f))
@@ -324,7 +356,7 @@ private fun BuocSo(so: Int, chu: String) {
 private fun DauTrang(icon: @Composable () -> Unit, tieuDe: String, phu: String?) {
     Column(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
         icon()
-        Text(tieuDe, fontWeight = FontWeight.Black, fontSize = 24.sp, textAlign = TextAlign.Center)
+        Text(tieuDe, fontWeight = FontWeight.SemiBold, fontSize = 24.sp, textAlign = TextAlign.Center, fontFamily = Poppins)
         if (phu != null) Phu(phu)
     }
 }
@@ -349,7 +381,7 @@ private fun ManChinh(vm: PhienLamViec) = Cuon {
     if (vm.daTuTatAdb) Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Tim.copy(alpha = 0.12f)).padding(14.dp),
         verticalAlignment = Alignment.CenterVertically) {
         Icon(Icons.Rounded.Lock, null, tint = Hong); Spacer(Modifier.width(10.dp))
-        Text("La depuración ADB se apagó en la TV cuando saliste de la app. La próxima vez, vuelve a activar la depuración USB en la TV.", fontSize = 13.sp)
+        Text("La depuración ADB se apagó en la TV cuando saliste de la app. La próxima vez, vuelve a activar la depuración por USB en la TV.", fontSize = 13.sp)
     }
     vm.banMoi?.let { b ->
         Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Tim.copy(alpha = 0.18f)).padding(14.dp),
@@ -364,13 +396,20 @@ private fun ManChinh(vm: PhienLamViec) = Cuon {
             }
         }
     }
-    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp))
-        .background(Brush.verticalGradient(listOf(Tim.copy(alpha = 0.35f), The1))).border(1.dp, Vien, RoundedCornerShape(24.dp)).padding(22.dp),
+    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(The1).border(1.dp, Vien, RoundedCornerShape(20.dp)).padding(22.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Image(painterResource(R.drawable.logo_cleantv), null, Modifier.size(64.dp))
-        Text("Adiós a la\npublicidad en tu TV", fontWeight = FontWeight.Black, fontSize = 26.sp, lineHeight = 32.sp)
-        Phu("Conéctate a la TV por Wi‑Fi, apaga la publicidad y las apps basura del fabricante y ponle un inicio limpio. ¿La quieres como estaba? Pulsa Restaurar.")
-        NutChinh("Limpiar una TV", icon = Icons.Rounded.AutoAwesome) { vm.datLai(); vm.man = Man.KET_NOI }
+        Text("Tu TV sin publicidad, en 4 pasos", fontWeight = FontWeight.SemiBold, fontSize = 26.sp, lineHeight = 33.sp, fontFamily = Poppins)
+        Phu("Desactivamos lo que no usas. Nada se borra y todo se puede deshacer con Restaurar.")
+        if (vm.dsSaoLuu.isNotEmpty()) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("${vm.dsSaoLuu.size}" to "TV limpias", "${vm.dsSaoLuu.sumOf { it.daTatBoiApp.size }}" to "apps desactivadas").forEach { (so, chu) ->
+                Column(Modifier.weight(1f).clip(RoundedCornerShape(12.dp)).background(The2).padding(12.dp)) {
+                    Text(so, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, color = Hong, fontFamily = Poppins)
+                    Text(chu, fontSize = 12.sp, color = ChuPhu)
+                }
+            }
+        }
+        NutChinh("Limpiar mi TV", icon = Icons.Rounded.AutoAwesome) { vm.datLai(); vm.man = Man.KET_NOI }
+        NutPhu("Cómo preparar la TV", Icons.Rounded.PhotoLibrary) { vm.moHuongDan() }
     }
     TheNhacNpt(vm)
     if (vm.dsSaoLuu.isNotEmpty()) {
@@ -419,12 +458,12 @@ private fun Radar(dangQuet: Boolean) {
 @Composable
 private fun ManKetNoi(vm: PhienLamViec) = Cuon {
     if (zone.vgs.tvsach.ManHinh.laTv) { KetNoiTiviNay(vm); return@Cuon }
-    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Color(0xFF3A2A10)).clickable { vm.moHuongDan() }.padding(14.dp),
+    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(NenCanhBao).clickable { vm.moHuongDan() }.padding(14.dp),
         verticalAlignment = Alignment.CenterVertically) {
         Icon(Icons.Rounded.Warning, null, tint = Cam); Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
-            Text("¿Está activada la depuración USB?", fontWeight = FontWeight.SemiBold)
-            Phu("Sin ella la app no se puede conectar. Toca para ver la guía con imágenes.", Color.White.copy(alpha = 0.8f))
+            Text("¿Está activada la depuración por USB?", fontWeight = FontWeight.SemiBold)
+            Phu("Sin ella la app no se puede conectar. Toca para ver la guía con imágenes.", ChuCanhBao)
         }
         Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, tint = Cam)
     }
@@ -436,7 +475,7 @@ private fun ManKetNoi(vm: PhienLamViec) = Cuon {
                 vm.dangQuet -> "Buscando TV…"
                 else -> "Buscar la TV"
             }, fontWeight = FontWeight.Bold, fontSize = 22.sp, textAlign = TextAlign.Center)
-        Phu("Teléfono y TV en el mismo Wi‑Fi, con la depuración USB activada.")
+        Phu("Teléfono y TV en el mismo Wi‑Fi, con la depuración por USB activada.")
     }
     NutPhu(if (vm.dangQuet) "Buscando…" else "Buscar en la red", Icons.Rounded.WifiFind, enabled = !vm.dangQuet) { vm.quetMang() }
     vm.timThay.forEach { dc ->
@@ -461,10 +500,10 @@ private fun ManKetNoi(vm: PhienLamViec) = Cuon {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.width(100.dp), shape = RoundedCornerShape(12.dp))
         }
         NutChinh("Conectar", enabled = !vm.dangBan) { vm.ketNoi() }
-        Phu("IP de la TV: Ajustes → Red → red actual. La primera vez la TV pregunta \"¿Permitir depuración?\": marca Permitir siempre y pulsa Permitir.")
+        Phu("IP de la TV: Ajustes → Red → red actual. La primera vez la TV pregunta \"¿Permitir la depuración?\": marca Permitir siempre y pulsa Permitir.")
     }
     Gap("Vincular con código (Depuración inalámbrica)", Icons.Rounded.Link) {
-        Phu("En la TV: Opciones de desarrollador → Depuración inalámbrica → Vincular dispositivo con código.")
+        Phu("En la TV: Opciones para desarrolladores → Depuración inalámbrica → Vincular dispositivo con un código de vinculación.")
         OutlinedTextField(vm.ghepIpCong, { vm.ghepIpCong = it.trim() }, label = { Text("IP:puerto de vinculación") }, placeholder = { Text("192.168.1.20:37123") },
             singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri), modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp))
         OutlinedTextField(vm.ghepMa, { vm.ghepMa = it.filter(Char::isDigit).take(6) }, label = { Text("Código de 6 dígitos") }, singleLine = true,
@@ -483,14 +522,14 @@ private fun ColumnScope.KetNoiTiviNay(vm: PhienLamViec) {
         Phu("TuneTV está funcionando en la misma TV, sin necesidad de teléfono.")
     }
     The("Antes de empezar", Icons.Rounded.Warning) {
-        BuocSo(1, "La depuración USB está activada (Opciones de desarrollador).")
-        BuocSo(2, "Pulsa Conectar. Cuando la TV pregunte \"¿Permitir depuración USB?\", marca Permitir siempre y pulsa Permitir.")
+        BuocSo(1, "La depuración por USB está activada (Opciones para desarrolladores).")
+        BuocSo(2, "Pulsa Conectar. Cuando la TV pregunte \"¿Permitir depuración por USB?\", marca Permitir siempre y pulsa Permitir.")
         BuocSo(3, "Mientras trabaja, la pantalla puede saltar al inicio unos segundos y luego volver.")
     }
     NutChinh("Conectar esta TV", enabled = !vm.dangBan, icon = Icons.Rounded.Link) { vm.ketNoiTiviNay() }
-    NutPhu("Guía con imágenes para la depuración USB", Icons.Rounded.Warning) { vm.moHuongDan() }
+    NutPhu("Guía con imágenes para la depuración por USB", Icons.Rounded.Warning) { vm.moHuongDan() }
     val ctxTv = androidx.compose.ui.platform.LocalContext.current
-    NutPhu("Abrir Opciones de desarrollador", Icons.Rounded.Tune) {
+    NutPhu("Abrir Opciones para desarrolladores", Icons.Rounded.Tune) {
         runCatching { ctxTv.startActivity(android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)) }
             .onFailure { runCatching { ctxTv.startActivity(android.content.Intent(android.provider.Settings.ACTION_SETTINGS).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)) } }
     }
@@ -517,17 +556,17 @@ private fun ManThongTin(vm: PhienLamViec) = Cuon {
             }
         }
     }
-    if (vm.laAndroidCu && !vm.laFireTv) Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color(0xFF3A2A10)).padding(12.dp)) {
+    if (vm.laAndroidCu && !vm.laFireTv) Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(NenCanhBao).padding(12.dp)) {
         Icon(Icons.Rounded.Warning, null, tint = Cam); Spacer(Modifier.width(8.dp))
         Phu("Este equipo tiene Android ${vm.thongTin?.android}: TuneTV puede quitar anuncios, rastreo y apps basura, pero NO puede instalar el inicio limpio (necesita Android 8 o más nuevo).")
     }
-    if (vm.laFireTv) Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color(0xFF3A2A10)).padding(12.dp)) {
+    if (vm.laFireTv) Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(NenCanhBao).padding(12.dp)) {
         Icon(Icons.Rounded.Warning, null, tint = Cam); Spacer(Modifier.width(8.dp))
         Phu("Fire TV: TuneTV puede quitar anuncios, rastreo y apps basura, pero NO puede reemplazar el inicio. Amazon bloquea el inicio con su propio launcher; ninguna app lo puede cambiar.")
     }
-    if (info.adbSecure == "0") Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color(0xFF3A2A10)).padding(12.dp)) {
+    if (info.adbSecure == "0") Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(NenCanhBao).padding(12.dp)) {
         Icon(Icons.Rounded.Warning, null, tint = Cam); Spacer(Modifier.width(8.dp))
-        Phu("Esta TV acepta ADB sin preguntar: cualquiera en la red puede controlarla. Apaga ADB cuando termines.", Color.White)
+        Phu("Esta TV acepta ADB sin preguntar: cualquiera en la red puede controlarla. Apaga ADB cuando termines.", ChuCanhBao)
     }
     vm.saoLuu?.let {
         Phu("Hay un respaldo del ${ngay(it.luc)}" +
@@ -586,7 +625,7 @@ private fun ManChonGoi(vm: PhienLamViec) {
                 Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(The1).border(1.dp, Vien, RoundedCornerShape(20.dp)).padding(18.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Row(verticalAlignment = Alignment.Bottom) {
-                        Text("$so", fontWeight = FontWeight.Black, fontSize = 40.sp)
+                        Text("$so", fontWeight = FontWeight.SemiBold, fontSize = 40.sp, color = Tim, fontFamily = Poppins)
                         Spacer(Modifier.width(8.dp))
                         Text("para desactivar" + " / ${vm.muc.size}", color = ChuPhu, modifier = Modifier.padding(bottom = 8.dp))
                     }
@@ -601,7 +640,7 @@ private fun ManChonGoi(vm: PhienLamViec) {
                 item(key = "h-$loai") {
                     Row(Modifier.fillMaxWidth().padding(top = 14.dp, start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
-                            Text(loai.tieuDe, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text(loai.tieuDe, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, fontFamily = Poppins)
                             Phu(loai.moTa)
                         }
                         val tatCa = ds.all { vm.chon[it.pkg] == true }
@@ -661,16 +700,16 @@ private fun ManChonGoi(vm: PhienLamViec) {
 @Composable
 private fun DongGoi(m: MucGoi, chon: Boolean, doi: (Boolean) -> Unit) {
     val ten = tenDep(m.pkg)
-    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(The1)
-        .border(1.dp, if (chon) Tim.copy(alpha = 0.6f) else Vien, RoundedCornerShape(16.dp)).clickable { doi(!chon) }.padding(12.dp),
+    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(The1)
+        .border(1.dp, if (chon) Tim.copy(alpha = 0.45f) else Vien, RoundedCornerShape(14.dp)).clickable { doi(!chon) }.padding(12.dp),
         verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(The2), contentAlignment = Alignment.Center) {
-            Text(ten.take(1).uppercase(), fontWeight = FontWeight.Bold, color = if (chon) Hong else ChuPhu)
+            Text(ten.take(1).uppercase(), fontWeight = FontWeight.Bold, color = if (chon) Tim else ChuPhu)
         }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(ten, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 1)
-            Text(m.pkg, fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = ChuPhu, maxLines = 1)
+            Text(m.pkg, fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = ChuPhu.copy(alpha = 0.8f), maxLines = 1)
             val ghi = m.ghiChu.ifBlank { m.nhom }
             if (ghi.isNotBlank()) Text(ghi, fontSize = 12.sp, color = ChuPhu, maxLines = 2, lineHeight = 16.sp)
             if (m.soMauTat > 0 || m.soMauGiu > 0) Row(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -678,7 +717,8 @@ private fun DongGoi(m: MucGoi, chon: Boolean, doi: (Boolean) -> Unit) {
                 if (m.soMauGiu > 0) Chip("⚠ conservado en ${m.soMauGiu}", Cam)
             }
         }
-        Checkbox(chon, doi)
+        Spacer(Modifier.width(8.dp))
+        Switch(chon, doi)
     }
 }
 
@@ -1051,7 +1091,7 @@ private fun DongNangCao(tc: zone.vgs.tvsach.dulieu.TuyChon, gt: String, doi: (St
     Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(The2).padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (gt.isNotBlank()) { Box(Modifier.size(8.dp).clip(CircleShape).background(Tim)); Spacer(Modifier.width(8.dp)) }
-            Text(tc.tieuDe(), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = if (gt.isNotBlank()) Hong else Color.White, modifier = Modifier.weight(1f))
+            Text(tc.tieuDe(), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = if (gt.isNotBlank()) Hong else Chu, modifier = Modifier.weight(1f))
             if (tc.canThan) Text("Cuidado", fontSize = 11.sp, color = Cam, modifier = Modifier.clip(RoundedCornerShape(50)).background(Cam.copy(alpha = 0.15f)).padding(horizontal = 8.dp, vertical = 2.dp))
         }
         // Khoá kỹ thuật vẫn hiện nhỏ (tra tài liệu CleanYourTV, hỏi trên nhóm) khi đã có tên tiếng Việt.
@@ -1134,8 +1174,8 @@ private fun ManXong(vm: PhienLamViec) = Cuon {
         onDispose { vongDoi.lifecycle.removeObserver(nghe) }
     }
     DauTrang({
-        Box(Modifier.size(96.dp).clip(RoundedCornerShape(30.dp)).background(Gradient), contentAlignment = Alignment.Center) {
-            Icon(Icons.Rounded.AutoAwesome, null, Modifier.size(52.dp), tint = Color.White)
+        Box(Modifier.size(88.dp).clip(CircleShape).background(Color(0xFFDCFCE7)), contentAlignment = Alignment.Center) {
+            Icon(Icons.Rounded.Check, null, Modifier.size(48.dp), tint = Color(0xFF166534))
         }
     }, "¡Tu TV quedó limpia!",
         if (vm.homeXong && vm.phimHomeOk) "El inicio limpio está funcionando: pulsa Inicio en el control."
@@ -1162,7 +1202,7 @@ private fun ManXong(vm: PhienLamViec) = Cuon {
     TheGuiDanhSach(vm)
     NutGopY(vm)
     NutChinh("Apagar ADB y terminar", enabled = !vm.dangBan, icon = Icons.Rounded.Lock) { vm.tatAdbVaKetThuc() }
-    Phu("Después en la TV: Opciones de desarrollador → apaga la depuración USB y \"Revocar autorizaciones de depuración USB\". El respaldo se queda en este teléfono para restaurar.")
+    Phu("Después en la TV: Opciones para desarrolladores → apaga la depuración por USB y \"Revocar autorizaciones de depuración por USB\". El respaldo se queda en este teléfono para restaurar.")
 }
 
 // ---------------- Khôi phục ----------------
@@ -1290,13 +1330,13 @@ private fun TheBatTungApp(vm: PhienLamViec) {
 /** Thẻ nổi bật ở màn chính: việc BẮT BUỘC làm trên tivi trước khi dùng app. */
 @Composable
 private fun TheNhacNpt(vm: PhienLamViec) {
-    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(Color(0xFF2A1F0C))
+    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(NenCanhBao)
         .border(1.5.dp, Cam.copy(alpha = 0.6f), RoundedCornerShape(20.dp)).padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Rounded.Warning, null, tint = Cam); Spacer(Modifier.width(8.dp))
             Text("Primero: activa el modo desarrollador en la TV", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
-        Phu("Sin esto, la app no puede llegar a la TV. Se hace una sola vez, en un minuto: Ajustes → Acerca de → pulsa Compilación 7 veces → activa la depuración USB.", Color.White.copy(alpha = 0.85f))
+        Phu("Sin esto, la app no puede llegar a la TV. Se hace una sola vez, en un minuto: Ajustes → Acerca de → pulsa Compilación 7 veces → activa la depuración por USB.", ChuCanhBao)
         Box(Modifier.fillMaxWidth().height(48.dp).clip(RoundedCornerShape(14.dp)).background(Cam).clickable { vm.moHuongDan() }, contentAlignment = Alignment.Center) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Rounded.MenuBook, null, tint = Color.Black); Spacer(Modifier.width(8.dp))
@@ -1310,7 +1350,7 @@ private fun TheNhacNpt(vm: PhienLamViec) {
 @Composable
 private fun ManHuongDan(vm: PhienLamViec) {
     val ctx = LocalContext.current
-    val thuMuc = if (NgonNgu.tiengViet) "vi" else "en"
+    val thuMuc = "es" // TuneTV: capturas de la guía redibujadas en español
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -1338,7 +1378,7 @@ private fun ManHuongDan(vm: PhienLamViec) {
         }
         item {
             The("Cambiar el aspecto después", Icons.Rounded.Palette) {
-                BuocSo(1, "En la TV vuelve a activar \"Depuración USB\" (las Opciones de desarrollador siguen ahí, no hace falta pulsar Compilación otra vez).")
+                BuocSo(1, "En la TV vuelve a activar \"Depuración por USB\" (las Opciones para desarrolladores siguen ahí, no hace falta pulsar Compilación otra vez).")
                 BuocSo(2, "Abre la app → Limpiar una TV → conéctate de nuevo a esa TV. Si marcaste \"Permitir siempre\", la TV no volverá a preguntar.")
                 BuocSo(3, "Toca \"Cambiar el tema del inicio limpio\", elige tema, dock, clima y saludo → Aplicar tema. Los paquetes desactivados se quedan como están.")
                 BuocSo(4, "Cuando termines, pulsa Apagar ADB como antes.")
@@ -1347,7 +1387,7 @@ private fun ManHuongDan(vm: PhienLamViec) {
         }
         item {
             The("Apágala cuando termines", Icons.Rounded.Lock) {
-                Phu("El último paso de la app apaga ADB. Para estar seguro, vuelve a \"Opciones de desarrollador\": apaga \"Depuración USB\" y elige \"Revocar autorizaciones de depuración USB\".")
+                Phu("El último paso de la app apaga ADB. Para estar seguro, vuelve a \"Opciones para desarrolladores\": apaga \"Depuración por USB\" y elige \"Revocar autorizaciones de depuración por USB\".")
             }
         }
         item {
